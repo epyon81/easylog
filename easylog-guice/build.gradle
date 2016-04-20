@@ -1,0 +1,13 @@
+group rootProject.group
+version rootProject.version
+
+apply plugin: 'java'
+
+dependencies {
+    compile project(':easylog-core')
+    compile project(':easylog-slf4j')
+    compile project(':easylog-el-messageparser')
+    compile "com.google.inject:guice:$guiceVersion"
+
+    testCompile "org.slf4j:slf4j-simple:$slf4jVersion"
+}

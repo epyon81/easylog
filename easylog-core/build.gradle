@@ -1,0 +1,10 @@
+group rootProject.group
+version rootProject.version
+
+apply plugin: 'java'
+
+dependencies {
+    testCompile "net.bytebuddy:byte-buddy:$byteBuddyVersion"
+    testCompile "org.assertj:assertj-core:$assertjVersion"
+    testCompile "org.mockito:mockito-core:$mockitoVersion"
+}

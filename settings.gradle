@@ -1,0 +1,7 @@
+rootProject.name = 'easylog'
+include 'easylog-core'
+include 'easylog-el-messageparser'
+include 'easylog-slf4j'
+include 'easylog-guice'
+include 'easylog-spring'
+
