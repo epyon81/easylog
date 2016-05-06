@@ -1,10 +1,8 @@
-*.class
-
 # IntelliJ
 /.idea
 
 # Package Files #
-*.jar
+# *.jar
 *.war
 *.ear
 
