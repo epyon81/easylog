@@ -4,8 +4,6 @@ import java.util.function.Supplier;
 
 /**
  * Logger interface.
- *
- * @since 1.0
  */
 public interface Logger {
 

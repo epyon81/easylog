@@ -12,8 +12,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 /**
  * Easylog spring configuration which registers the AspectJ interceptor, the {@link Slf4jLoggerFactory}
  * and the {@link ElMessageParser}.
- *
- * @since 1.0
  */
 @Configuration
 @EnableAspectJAutoProxy

@@ -9,8 +9,6 @@ import javax.inject.Provider;
 
 /**
  * Provider for an easylog {@link LoggingInterceptor}.
- *
- * @since 1.0
  */
 public class LoggingInterceptorProvider implements Provider<LoggingInterceptor> {
 

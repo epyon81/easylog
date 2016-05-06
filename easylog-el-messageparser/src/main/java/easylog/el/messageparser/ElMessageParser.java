@@ -17,8 +17,6 @@ import java.util.regex.Pattern;
 
 /**
  * Easylog message parser using the java unified expression language.
- *
- * @since 1.0
  */
 public class ElMessageParser implements LogMessageParser {
     private static final Pattern EXPRESSION_PATTERN = Pattern.compile("\\$\\{.*?\\}");
@@ -34,6 +32,53 @@ public class ElMessageParser implements LogMessageParser {
 
     @Override
     public String parse(Scope scope, String message) {
+        SimpleContext context = createExpressionContext(scope);
+
+        List<Function<String, String>> replaceFunctions = parseMessageIntoTextReplaceFunctions(message, context);
+
+        return replacePlaceholdersInMessage(message, replaceFunctions);
+    }
+
+    private String replacePlaceholdersInMessage(String message, List<Function<String, String>> replaceFunctions) {
+        for (int i = replaceFunctions.size() - 1; i >= 0; i--) {
+            message = replaceFunctions.get(i).apply(message);
+        }
+
+        return message;
+    }
+
+    private List<Function<String, String>> parseMessageIntoTextReplaceFunctions(String message, SimpleContext context) {
+        Matcher expressionMatcher = EXPRESSION_PATTERN.matcher(message);
+
+        List<Function<String, String>> replaceFunctions = new ArrayList<>();
+
+        while (expressionMatcher.find()) {
+            replaceFunctions.add(parseExpressionIntoReplaceFunction(context, expressionMatcher));
+        }
+        return replaceFunctions;
+    }
+
+    private Function<String, String> parseExpressionIntoReplaceFunction(SimpleContext context, Matcher expressionMatcher) {
+        String expression = expressionMatcher.group();
+
+        Object expressionValue = evaluateExpression(context, expression);
+
+        int start = expressionMatcher.start();
+        int end = expressionMatcher.end();
+
+        return s -> new StringBuilder(s).replace(start, end, nullSafeToString(expressionValue)).toString();
+    }
+
+    private static String nullSafeToString(Object value) {
+        return value == null ? "null" : value.toString();
+    }
+
+    private Object evaluateExpression(SimpleContext context, String expression) {
+        ValueExpression valueExpression = expressionFactory.createValueExpression(context, expression, Object.class);
+        return valueExpression.getValue(context);
+    }
+
+    private SimpleContext createExpressionContext(Scope scope) {
         SimpleContext context = new SimpleContext();
         context.setVariable("arguments", expressionFactory.createValueExpression(scope.getInvocationContext().getArguments(), Object[].class));
         context.setVariable("methodName", expressionFactory.createValueExpression(scope.getInvocationContext().getMethod().getName(), String.class));
@@ -46,28 +91,7 @@ public class ElMessageParser implements LogMessageParser {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-
-        Matcher formatMatcher = EXPRESSION_PATTERN.matcher(message);
-
-        List<Function<String, String>> replaceActions = new ArrayList<>();
-
-        while (formatMatcher.find()) {
-            String expression = formatMatcher.group();
-
-            ValueExpression valueExpression = expressionFactory.createValueExpression(context, expression, Object.class);
-            Object expressionValue = valueExpression.getValue(context);
-
-            int start = formatMatcher.start();
-            int end = formatMatcher.end();
-
-            replaceActions.add(s -> new StringBuilder(s).replace(start, end, expressionValue == null ? "null" : expressionValue.toString()).toString());
-        }
-
-        for (int i = replaceActions.size() - 1; i >= 0; i--) {
-            message = replaceActions.get(i).apply(message);
-        }
-
-        return message;
+        return context;
     }
 
     // this is just a utility method that is added to the EL context

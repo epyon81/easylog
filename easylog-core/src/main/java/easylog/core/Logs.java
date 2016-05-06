@@ -9,8 +9,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation the contains multiple {@link Log} annotations.
- *
- * @since 1.0
  */
 @Documented
 @Retention(value = RUNTIME)

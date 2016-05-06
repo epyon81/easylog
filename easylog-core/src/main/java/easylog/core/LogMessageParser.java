@@ -2,8 +2,6 @@ package easylog.core;
 
 /**
  * Interface for a log message parser.
- *
- * @since 1.0
  */
 public interface LogMessageParser {
 

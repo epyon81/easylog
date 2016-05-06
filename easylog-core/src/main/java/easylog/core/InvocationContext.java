@@ -4,8 +4,6 @@ import java.lang.reflect.Method;
 
 /**
  * Interface for an invocation context.
- *
- * @since 1.0
  */
 public interface InvocationContext {
 

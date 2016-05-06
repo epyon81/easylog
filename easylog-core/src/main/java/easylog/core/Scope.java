@@ -2,8 +2,6 @@ package easylog.core;
 
 /**
  * Scope information of a logging interception.
- *
- * @since 1.0
  */
 public class Scope {
     private InvocationContext invocationContext;

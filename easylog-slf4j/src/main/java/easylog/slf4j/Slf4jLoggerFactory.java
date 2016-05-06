@@ -5,8 +5,6 @@ import easylog.core.LoggerFactory;
 
 /**
  * Easylog logger factory using slf4j.
- *
- * @since 1.0
  */
 public class Slf4jLoggerFactory implements LoggerFactory {
     @Override

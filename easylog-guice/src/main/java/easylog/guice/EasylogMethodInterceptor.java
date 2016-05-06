@@ -10,8 +10,6 @@ import java.lang.reflect.Method;
 
 /**
  * Guice method interceptor which delegates to the easylog {@link LoggingInterceptor}.
- *
- * @since 1.0
  */
 public class EasylogMethodInterceptor implements MethodInterceptor {
 

@@ -2,8 +2,6 @@ package easylog.core;
 
 /**
  * Interface for a factory class that created {@link Logger} objects.
- *
- * @since 1.0
  */
 public interface LoggerFactory {
 

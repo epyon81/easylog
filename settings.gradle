@@ -4,4 +4,5 @@ include 'easylog-el-messageparser'
 include 'easylog-slf4j'
 include 'easylog-guice'
 include 'easylog-spring'
+include 'easylog-jee'
 

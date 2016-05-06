@@ -10,8 +10,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Interface, to mark methods for logging.
- *
- * @since 1.0
  */
 @Documented
 @Retention(value = RUNTIME)

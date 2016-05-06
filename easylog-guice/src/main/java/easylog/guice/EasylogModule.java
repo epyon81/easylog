@@ -8,8 +8,6 @@ import static com.google.inject.matcher.Matchers.any;
 
 /**
  * Easylog Guice module.
- *
- * @since 1.0
  */
 public class EasylogModule extends AbstractModule {
 

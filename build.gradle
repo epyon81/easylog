@@ -12,6 +12,7 @@ subprojects {
         aspectjVersion = '1.8.9'
         slf4jVersion = '1.7.21'
         guiceVersion = '4.0'
+        javaeeVersion = '7.0'
     }
 
     plugins.withType(JavaPlugin) {
@@ -19,10 +20,20 @@ subprojects {
 
         repositories {
             mavenCentral()
+            maven { url 'http://repository.jboss.org/nexus/content/groups/public' }
+            maven { url 'http://repository.jboss.org/nexus/content/repositories/deprecated' }
+            maven { url 'http://repo.jfrog.org/artifactory/repo' }
         }
 
         dependencies {
             testCompile "junit:junit:$junitVersion"
+        }
+
+        test {
+            testLogging {
+                events 'passed', 'skipped', 'failed'
+                exceptionFormat = 'full'
+            }
         }
     }
 }

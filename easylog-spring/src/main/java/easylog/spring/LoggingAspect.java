@@ -12,8 +12,6 @@ import java.lang.reflect.Method;
 
 /**
  * AspectJ aspect for intercepting {@link Log} annotated methods and calling the easy log {@link LoggingInterceptor}.
- *
- * @since 1.0
  */
 @Aspect
 public class LoggingAspect {
