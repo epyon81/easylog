@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 /**
  * Easylog logger implementation using slf4j logger.
  */
-@SuppressWarnings("Duplicates")
 public class Slf4jLogger implements Logger {
 
     private org.slf4j.Logger logger;
@@ -27,28 +26,35 @@ public class Slf4jLogger implements Logger {
     }
 
     private BiConsumer<String, Throwable> getMessageWithThrowableConsumerForLogLevel(LogLevel level) {
-        BiConsumer<String, Throwable> logConsumer;
+        return getForLogLevel(
+                level,
+                () -> logger::debug,
+                () -> logger::error,
+                () -> logger::info,
+                () -> logger::trace,
+                () -> logger::warn);
+    }
 
+    private <T> T getForLogLevel(LogLevel level,
+                                 Supplier<T> debugSupplier,
+                                 Supplier<T> errorSupplier,
+                                 Supplier<T> infoSupplier,
+                                 Supplier<T> traceSupplier,
+                                 Supplier<T> warnSupplier) {
         switch (level) {
             case DEBUG:
-                logConsumer = logger::debug;
-                break;
+                return debugSupplier.get();
             case ERROR:
-                logConsumer = logger::error;
-                break;
+                return errorSupplier.get();
             case INFO:
-                logConsumer = logger::info;
-                break;
+                return infoSupplier.get();
             case TRACE:
-                logConsumer = logger::trace;
-                break;
+                return traceSupplier.get();
             case WARN:
-                logConsumer = logger::warn;
-                break;
+                return warnSupplier.get();
             default:
                 throw new RuntimeException("Unexpected log level: " + level);
         }
-        return logConsumer;
     }
 
     @Override
@@ -68,52 +74,22 @@ public class Slf4jLogger implements Logger {
     }
 
     private Consumer<String> getMessageConsumerForLogLevel(LogLevel level) {
-        Consumer<String> logConsumer;
-
-        switch (level) {
-            case DEBUG:
-                logConsumer = logger::debug;
-                break;
-            case ERROR:
-                logConsumer = logger::error;
-                break;
-            case INFO:
-                logConsumer = logger::info;
-                break;
-            case TRACE:
-                logConsumer = logger::trace;
-                break;
-            case WARN:
-                logConsumer = logger::warn;
-                break;
-            default:
-                throw new RuntimeException("Unexpected log level: " + level);
-        }
-        return logConsumer;
+        return getForLogLevel(
+                level,
+                () -> logger::debug,
+                () -> logger::error,
+                () -> logger::info,
+                () -> logger::trace,
+                () -> logger::warn);
     }
 
     private Supplier<Boolean> getLoggerEnabledSupplierForLogLevel(LogLevel level) {
-        Supplier<Boolean> supplier;
-
-        switch (level) {
-            case DEBUG:
-                supplier = logger::isDebugEnabled;
-                break;
-            case ERROR:
-                supplier = logger::isErrorEnabled;
-                break;
-            case INFO:
-                supplier = logger::isInfoEnabled;
-                break;
-            case TRACE:
-                supplier = logger::isTraceEnabled;
-                break;
-            case WARN:
-                supplier = logger::isWarnEnabled;
-                break;
-            default:
-                throw new RuntimeException("Unexpected log level: " + level);
-        }
-        return supplier;
+        return getForLogLevel(
+                level,
+                () -> logger::isDebugEnabled,
+                () -> logger::isErrorEnabled,
+                () -> logger::isInfoEnabled,
+                () -> logger::isTraceEnabled,
+                () -> logger::isWarnEnabled);
     }
 }
