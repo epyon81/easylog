@@ -1,6 +1,7 @@
 package easylog.guice;
 
 import easylog.core.Log;
+import easylog.core.LogPosition;
 
 public class TestObject {
 
@@ -11,6 +12,7 @@ public class TestObject {
 
     @SuppressWarnings("WeakerAccess")
     @Log(detailed = true)
+    @Log(detailed = true, position = LogPosition.AFTER)
     protected int more() {
         return 0;
     }

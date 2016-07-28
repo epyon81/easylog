@@ -1,8 +1,19 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
+    }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
+    apply plugin: 'nebula.optional-base'
 
     group 'com.github.epyon81.easylog'
 
@@ -17,6 +28,7 @@ subprojects {
         slf4jVersion = '1.7.21'
         guiceVersion = '4.0'
         javaeeVersion = '7.0'
+        reflectionsVersion = '0.9.10'
     }
 
     sourceCompatibility = 1.8
@@ -32,7 +44,7 @@ subprojects {
     }
 
     repositories {
-        mavenCentral()
+        jcenter()
         maven { url 'http://repository.jboss.org/nexus/content/groups/public' }
         maven { url 'http://repository.jboss.org/nexus/content/repositories/deprecated' }
         maven { url 'http://repo.jfrog.org/artifactory/repo' }

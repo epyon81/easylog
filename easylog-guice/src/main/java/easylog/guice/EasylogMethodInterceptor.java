@@ -23,6 +23,8 @@ public class EasylogMethodInterceptor implements MethodInterceptor {
 
     private static class GuiceInvocationContext implements InvocationContext {
 
+        public static final String GUICE_ENHANCER_STRING = "EnhancerByGuice";
+
         private MethodInvocation methodInvocation;
 
         public GuiceInvocationContext(MethodInvocation methodInvocation) {
@@ -33,11 +35,15 @@ public class EasylogMethodInterceptor implements MethodInterceptor {
         public Class<?> getTargetClass() {
             Class<?> targetClass = methodInvocation.getThis().getClass();
 
-            if (targetClass.getSimpleName().contains("EnhancerByGuice")) {
+            if (classIsEnhancedByGuice(targetClass)) {
                 targetClass = targetClass.getSuperclass();
             }
 
             return targetClass;
+        }
+
+        private boolean classIsEnhancedByGuice(Class<?> targetClass) {
+            return targetClass.getSimpleName().contains(GUICE_ENHANCER_STRING);
         }
 
         @Override
