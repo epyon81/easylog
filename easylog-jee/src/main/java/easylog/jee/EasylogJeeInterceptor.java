@@ -56,7 +56,24 @@ public class EasylogJeeInterceptor {
 
         @Override
         public Class<?> getTargetClass() {
-            return invocationContext.getTarget().getClass();
+            try {
+                return getActualSimpleClass(invocationContext.getTarget().getClass());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private Class<?> getActualSimpleClass(Class<?> possibleProxyClass) throws ClassNotFoundException {
+            String outerClassName = possibleProxyClass.getName();
+            String innerClassName;
+
+            if (outerClassName.contains("$Proxy$")) {
+                innerClassName = outerClassName.substring(0, outerClassName.indexOf('$'));
+            } else {
+                innerClassName = outerClassName;
+            }
+
+            return Class.forName(innerClassName);
         }
 
         @Override
