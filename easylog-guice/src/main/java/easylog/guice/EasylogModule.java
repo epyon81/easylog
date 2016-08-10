@@ -2,10 +2,6 @@ package easylog.guice;
 
 import com.google.inject.AbstractModule;
 import easylog.core.*;
-import org.reflections.Reflections;
-
-import java.text.MessageFormat;
-import java.util.Set;
 
 import static com.google.inject.matcher.Matchers.annotatedWith;
 import static com.google.inject.matcher.Matchers.any;
@@ -25,33 +21,17 @@ public class EasylogModule extends AbstractModule {
 
         bind(LoggingInterceptor.class).toProvider(LoggingInterceptorProvider.class);
 
-        Reflections reflections = new Reflections("easylog");
-
-        bindInterfaceImplementation(reflections, LoggerFactory.class);
-        bindInterfaceImplementation(reflections, LogMessageParser.class);
+        bindOptionalClass("easylog.slf4j.Slf4jLoggerFactory", LoggerFactory.class);
+        bindOptionalClass("easylog.el.messageparser.ElMessageParser", LogMessageParser.class);
     }
 
-    private <T> void bindInterfaceImplementation(Reflections reflections, Class<T> interfaceClass) {
-        Class<? extends T> implementationType = findSingleImplementationType(reflections, interfaceClass);
+    private <T> void bindOptionalClass(String className, Class<T> interfaceClass) {
+        try {
+            @SuppressWarnings("unchecked")
+            Class<? extends T> optionalClass = (Class<? extends T>) Class.forName(className);
 
-        if (implementationType != null) {
-            bind(interfaceClass).to(implementationType);
+            bind(interfaceClass).to(optionalClass);
+        } catch (ClassNotFoundException ignored) {
         }
-    }
-
-    private <T> Class<? extends T> findSingleImplementationType(Reflections reflections, Class<T> interfaceClass) {
-        Set<Class<? extends T>> foundTypes = reflections.getSubTypesOf(interfaceClass);
-
-        Class<? extends T> implementationType = null;
-
-        for (Class<? extends T> type : foundTypes) {
-            if (implementationType == null) {
-                implementationType = type;
-            } else {
-                throw new EasylogException(
-                        MessageFormat.format("Multiple implementations of type ''{0}'' found.", interfaceClass));
-            }
-        }
-        return implementationType;
     }
 }

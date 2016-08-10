@@ -1,10 +1,10 @@
 package easylog.spring;
 
-import easylog.core.LogMessageParser;
+class MessageParserPresentCondition extends TypePresentCondition {
 
-class MessageParserPresentCondition extends TypePresentCondition<LogMessageParser> {
-    
+    static final String TYPE_NAME = "easylog.el.messageparser.ElMessageParser";
+
     public MessageParserPresentCondition() {
-        super(LogMessageParser.class);
+        super(TYPE_NAME);
     }
 }

@@ -1,10 +1,10 @@
 package easylog.spring;
 
-import easylog.core.LoggerFactory;
+class LoggerFactoryPresentCondition extends TypePresentCondition {
 
-class LoggerFactoryPresentCondition extends TypePresentCondition<LoggerFactory> {
+    static final String TYPE_NAME = "easylog.slf4j.Slf4jLoggerFactory";
 
     public LoggerFactoryPresentCondition() {
-        super(LoggerFactory.class);
+        super(TYPE_NAME);
     }
 }

@@ -17,5 +17,12 @@ public class EasylogConfigurationTest {
         int result = testClass.doIt(5, 3);
 
         assertThat(result).isEqualTo(8);
+
+        TestLoggerFactory loggerFactory = ctx.getBean(TestLoggerFactory.class);
+
+        String expectedLog = "[INFO] Enter easylog.spring.TestClass.doIt(5, 3).\n" +
+                "[WARN] Exit doIt...\n";
+
+        assertThat(loggerFactory.getLogText()).isEqualTo(expectedLog);
     }
 }

@@ -1,7 +1,5 @@
 dependencies {
     compile project(':easylog-core')
-    compile project(':easylog-slf4j')
-    compile project(':easylog-el-messageparser')
 
     compile "javax:javaee-api:$javaeeVersion"
 }
