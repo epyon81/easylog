@@ -3,5 +3,4 @@ dependencies {
     compile "com.google.inject:guice:$guiceVersion"
 
     testCompile project(':easylog-el-messageparser')
-    testCompile "org.assertj:assertj-core:$assertjVersion"
 }

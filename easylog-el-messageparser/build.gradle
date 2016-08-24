@@ -3,6 +3,5 @@ dependencies {
     compile "de.odysseus.juel:juel-api:$juelVersion"
     compile "de.odysseus.juel:juel-impl:$juelVersion"
 
-    testCompile "org.assertj:assertj-core:$assertjVersion"
     testCompile "org.mockito:mockito-core:$mockitoVersion"
 }

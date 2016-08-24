@@ -8,6 +8,8 @@ buildscript {
     }
 }
 
+apply plugin: 'distribution'
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
@@ -52,6 +54,7 @@ subprojects {
 
     dependencies {
         testCompile "junit:junit:$junitVersion"
+        testCompile "org.assertj:assertj-core:$assertjVersion"
     }
 
     publishing {
@@ -60,6 +63,21 @@ subprojects {
                 from components.java
                 artifact sourceJar
                 artifact javadocJar
+            }
+        }
+    }
+}
+
+distributions {
+    main {
+        contents {
+            subprojects.each { sp ->
+                into(sp.name) {
+                    into('lib') {
+                        from sp.configurations.runtime
+                    }
+                    from sp.jar
+                }
             }
         }
     }
