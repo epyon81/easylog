@@ -11,3 +11,8 @@ hs_err_pid*
 
 # build output
 /*/build
+/classes
+/build
+
+# Gradle
+/.gradle
