@@ -94,9 +94,8 @@ public class LoggingInterceptor {
 
     private List<Log> getInterceptedMethodLogAnnotationsForCurrentLogPosition(InvocationContext context,
                                                                               LogPosition logPosition) {
-        return Arrays.asList(context.getMethod().getAnnotationsByType(Log.class))
-                .stream()
-                .filter(log -> Arrays.asList(log.position()).contains(logPosition))
+        return Arrays.stream(context.getMethod().getAnnotationsByType(Log.class))
+                .filter(log -> Arrays.stream(log.position()).anyMatch(lp -> lp.equals(logPosition)))
                 .collect(toList());
     }
 
@@ -151,63 +150,75 @@ public class LoggingInterceptor {
     private String getBeforePositionFormat(Log log, Scope scope) {
         String format;
         if (log.detailed()) {
-            format = MessageFormat.format("Enter {0}.{1}({2}).",
-                    scope.getInvocationContext().getTargetClass().getName(),
-                    scope.getInvocationContext().getMethod().getName(),
-                    arrayToString(scope.getInvocationContext().getArguments()));
+            format = formatVoidMethodWithArguments("Enter {0}.{1}({2}).", scope);
         } else {
-            format = MessageFormat.format("Enter {0}.{1}.",
-                    scope.getInvocationContext().getTargetClass().getName(),
-                    scope.getInvocationContext().getMethod().getName());
+            format = formatVoidMethodWithoutArguments("Enter {0}.{1}.", scope);
         }
         return format;
+    }
+
+    private String formatVoidMethodWithArguments(String pattern, Scope scope) {
+        return MessageFormat.format(pattern,
+                scope.getInvocationContext().getTargetClass().getName(),
+                scope.getInvocationContext().getMethod().getName(),
+                arrayToString(scope.getInvocationContext().getArguments()));
+    }
+
+    private String formatVoidMethodWithoutArguments(String pattern, Scope scope) {
+        return MessageFormat.format(pattern,
+                scope.getInvocationContext().getTargetClass().getName(),
+                scope.getInvocationContext().getMethod().getName());
     }
 
     private String getAfterPositionFormat(Log log, Scope scope) {
         String format;
         if (log.detailed()) {
             if (scope.getInvocationContext().getMethod().getReturnType().equals(Void.TYPE)) {
-                format = MessageFormat.format("Exit {0}.{1}({2}).",
-                        scope.getInvocationContext().getTargetClass().getName(),
-                        scope.getInvocationContext().getMethod().getName(),
-                        arrayToString(scope.getInvocationContext().getArguments()));
+                format = formatVoidMethodWithArguments("Exit {0}.{1}({2}).", scope);
             } else {
-                format = MessageFormat.format("Exit {0}.{1}({2}) with result {3}.",
-                        scope.getInvocationContext().getTargetClass().getName(),
-                        scope.getInvocationContext().getMethod().getName(),
-                        arrayToString(scope.getInvocationContext().getArguments()),
-                        scope.getResult());
+                format = formatMethodWithArgumentsAndResult("Exit {0}.{1}({2}) with result {3}.", scope);
             }
         } else {
-            format = MessageFormat.format("Exit {0}.{1}.",
-                    scope.getInvocationContext().getTargetClass().getName(),
-                    scope.getInvocationContext().getMethod().getName());
+            format = formatVoidMethodWithoutArguments("Exit {0}.{1}.", scope);
         }
         return format;
+    }
+
+    private String formatMethodWithArgumentsAndResult(String pattern, Scope scope) {
+        return MessageFormat.format(pattern,
+                scope.getInvocationContext().getTargetClass().getName(),
+                scope.getInvocationContext().getMethod().getName(),
+                arrayToString(scope.getInvocationContext().getArguments()), scope.getResult());
     }
 
     private String getAfterExceptionPositionFormat(Log log, Scope scope) {
         String format;
         if (log.detailed()) {
-            format = MessageFormat.format("Error in {0}.{1}({2}):\n{3}",
-                    scope.getInvocationContext().getTargetClass().getName(),
-                    scope.getInvocationContext().getMethod().getName(),
-                    arrayToString(scope.getInvocationContext().getArguments()),
-                    formatException(scope.getException()));
+            format = formatMethodWithArgumentsAndException(scope);
         } else {
-            format = MessageFormat.format("Error in {0}.{1}:\n{2}",
-                    scope.getInvocationContext().getTargetClass().getName(),
-                    scope.getInvocationContext().getMethod().getName(),
-                    formatException(scope.getException()));
+            format = formatMethodWithoutArgumentsWithException(scope);
         }
         return format;
     }
 
+    private String formatMethodWithArgumentsAndException(Scope scope) {
+        return MessageFormat.format("Error in {0}.{1}({2}):\n{3}",
+                scope.getInvocationContext().getTargetClass().getName(),
+                scope.getInvocationContext().getMethod().getName(),
+                arrayToString(scope.getInvocationContext().getArguments()),
+                formatException(scope.getException()));
+    }
+
+    private String formatMethodWithoutArgumentsWithException(Scope scope) {
+        return MessageFormat.format("Error in {0}.{1}:\n{2}",
+                scope.getInvocationContext().getTargetClass().getName(),
+                scope.getInvocationContext().getMethod().getName(),
+                formatException(scope.getException()));
+    }
+
     private void logExceptionDuringInvocationLogging(LogContext logContext, Exception e) {
-        logger.log(
-                LogLevel.WARN,
-                () -> MessageFormat.format(
-                        "Error creating a log entry for ''{0}.{1}'' at position {2}:\n{3}",
+        logger.log(LogLevel.WARN,
+                () -> MessageFormat.format("Error creating a log entry for ''{0}.{1}'' at position {2}:\n{3}",
                         logContext.getInvocationContext().getTargetClass().getName(),
                         logContext.getInvocationContext().getMethod().getName(),
                         logContext.getLogPosition(),
