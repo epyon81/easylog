@@ -30,6 +30,14 @@ public class ElMessageParser implements LogMessageParser {
         expressionFactory = new ExpressionFactoryImpl();
     }
 
+    // this is just a utility method that is added to the EL context
+    @SuppressWarnings({"WeakerAccess"})
+    public static String arrayToString(Object[] array) {
+        String result = Arrays.toString(array);
+
+        return result.substring(1, result.length() - 1);
+    }
+
     @Override
     public String parse(Scope scope, String message) {
         SimpleContext context = createExpressionContext(scope);
@@ -37,45 +45,6 @@ public class ElMessageParser implements LogMessageParser {
         List<Function<String, String>> replaceFunctions = parseMessageIntoTextReplaceFunctions(message, context);
 
         return replacePlaceholdersInMessage(message, replaceFunctions);
-    }
-
-    private String replacePlaceholdersInMessage(String message, List<Function<String, String>> replaceFunctions) {
-        for (int i = replaceFunctions.size() - 1; i >= 0; i--) {
-            message = replaceFunctions.get(i).apply(message);
-        }
-
-        return message;
-    }
-
-    private List<Function<String, String>> parseMessageIntoTextReplaceFunctions(String message, SimpleContext context) {
-        Matcher expressionMatcher = EXPRESSION_PATTERN.matcher(message);
-
-        List<Function<String, String>> replaceFunctions = new ArrayList<>();
-
-        while (expressionMatcher.find()) {
-            replaceFunctions.add(parseExpressionIntoReplaceFunction(context, expressionMatcher));
-        }
-        return replaceFunctions;
-    }
-
-    private Function<String, String> parseExpressionIntoReplaceFunction(SimpleContext context, Matcher expressionMatcher) {
-        String expression = expressionMatcher.group();
-
-        Object expressionValue = evaluateExpression(context, expression);
-
-        int start = expressionMatcher.start();
-        int end = expressionMatcher.end();
-
-        return s -> new StringBuilder(s).replace(start, end, nullSafeToString(expressionValue)).toString();
-    }
-
-    private static String nullSafeToString(Object value) {
-        return value == null ? "null" : value.toString();
-    }
-
-    private Object evaluateExpression(SimpleContext context, String expression) {
-        ValueExpression valueExpression = expressionFactory.createValueExpression(context, expression, Object.class);
-        return valueExpression.getValue(context);
     }
 
     private SimpleContext createExpressionContext(Scope scope) {
@@ -91,14 +60,48 @@ public class ElMessageParser implements LogMessageParser {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
+
         return context;
     }
 
-    // this is just a utility method that is added to the EL context
-    @SuppressWarnings({"WeakerAccess"})
-    public static String arrayToString(Object[] array) {
-        String result = Arrays.toString(array);
+    private List<Function<String, String>> parseMessageIntoTextReplaceFunctions(String message, SimpleContext context) {
+        Matcher expressionMatcher = EXPRESSION_PATTERN.matcher(message);
 
-        return result.substring(1, result.length() - 1);
+        List<Function<String, String>> replaceFunctions = new ArrayList<>();
+
+        while (expressionMatcher.find()) {
+            replaceFunctions.add(parseExpressionIntoReplaceFunction(context, expressionMatcher));
+        }
+
+        return replaceFunctions;
+    }
+
+    private String replacePlaceholdersInMessage(String message, List<Function<String, String>> replaceFunctions) {
+        for (int i = replaceFunctions.size() - 1; i >= 0; i--) {
+            message = replaceFunctions.get(i).apply(message);
+        }
+
+        return message;
+    }
+
+    private Function<String, String> parseExpressionIntoReplaceFunction(SimpleContext context, Matcher expressionMatcher) {
+        String expression = expressionMatcher.group();
+
+        Object expressionValue = evaluateExpression(context, expression);
+
+        int start = expressionMatcher.start();
+        int end = expressionMatcher.end();
+
+        return s -> new StringBuilder(s).replace(start, end, nullSafeToString(expressionValue)).toString();
+    }
+
+    private Object evaluateExpression(SimpleContext context, String expression) {
+        ValueExpression valueExpression = expressionFactory.createValueExpression(context, expression, Object.class);
+
+        return valueExpression.getValue(context);
+    }
+
+    private static String nullSafeToString(Object value) {
+        return value == null ? "null" : value.toString();
     }
 }
