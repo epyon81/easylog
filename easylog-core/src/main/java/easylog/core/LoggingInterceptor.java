@@ -2,9 +2,12 @@ package easylog.core;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static java.util.stream.Collectors.toList;
 
@@ -61,9 +64,28 @@ public class LoggingInterceptor {
 
         Object result = proceedAndLogException(context);
 
-        logInvocation(LogContext.createWithResult(context, LogPosition.AFTER, result));
+        if (resultIsCompletableFuture(result)) {
+            result = appendAfterLoggingToCompletableFuture(context, result);
+        } else {
+            logInvocation(LogContext.createWithResult(context, LogPosition.AFTER, result));
+        }
 
         return result;
+    }
+
+    private Object appendAfterLoggingToCompletableFuture(InvocationContext context, Object result) {
+        @SuppressWarnings("unchecked") CompletableFuture<Object> future = (CompletableFuture<Object>) result;
+
+        result = future.thenApply(futureResult -> {
+            logInvocation(LogContext.createWithResult(context, LogPosition.AFTER, futureResult));
+
+            return futureResult;
+        });
+        return result;
+    }
+
+    private boolean resultIsCompletableFuture(Object result) {
+        return result != null && CompletableFuture.class.isAssignableFrom(result.getClass());
     }
 
     private Object proceedAndLogException(InvocationContext context) throws Throwable {
@@ -173,7 +195,7 @@ public class LoggingInterceptor {
     private String getAfterPositionFormat(Log log, Scope scope) {
         String format;
         if (log.detailed()) {
-            if (scope.getInvocationContext().getMethod().getReturnType().equals(Void.TYPE)) {
+            if (isVoidMethod(scope)) {
                 format = formatVoidMethodWithArguments("Exit {0}.{1}({2}).", scope);
             } else {
                 format = formatMethodWithArgumentsAndResult("Exit {0}.{1}({2}) with result {3}.", scope);
@@ -182,6 +204,17 @@ public class LoggingInterceptor {
             format = formatVoidMethodWithoutArguments("Exit {0}.{1}.", scope);
         }
         return format;
+    }
+
+    private boolean isVoidMethod(Scope scope) {
+        Method method = scope.getInvocationContext().getMethod();
+
+        return method.getReturnType().equals(Void.TYPE) || methodReturnsVoidCompletableFuture(method);
+    }
+
+    private boolean methodReturnsVoidCompletableFuture(Method method) {
+        return CompletableFuture.class.isAssignableFrom(method.getReturnType())
+                && ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].equals(Void.class);
     }
 
     private String formatMethodWithArgumentsAndResult(String pattern, Scope scope) {

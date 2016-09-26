@@ -18,6 +18,8 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 import static net.bytebuddy.matcher.ElementMatchers.isAnnotatedWith;
@@ -48,6 +50,8 @@ public class LoggingInterceptorTest {
                 .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
                 .getLoaded()
                 .newInstance();
+
+        testObject.messages = loggerFactory.messages;
     }
 
     @Test
@@ -163,6 +167,25 @@ public class LoggingInterceptorTest {
                 .withMessage("ERROR");
 
         assertThat(loggerFactory.messages).containsExactly("[INFO] AE_TEST!!!");
+    }
+
+    @Test
+    public void futureWithoutResultDetailed() throws ExecutionException, InterruptedException {
+        CompletableFuture<Void> future = testObject.futureWithoutResultDetailed();
+
+        future.get();
+
+        assertThat(loggerFactory.messages).containsExactly("CALLED", "[INFO] Exit easylog.core.TestObject.futureWithoutResultDetailed().");
+    }
+
+    @Test
+    public void futureWithResultDetailed() throws ExecutionException, InterruptedException {
+        CompletableFuture<Integer> future = testObject.futureWithResultDetailed();
+
+        Integer value = future.get();
+
+        assertThat(value).isEqualTo(123);
+        assertThat(loggerFactory.messages).containsExactly("[INFO] Exit easylog.core.TestObject.futureWithResultDetailed() with result 123.");
     }
 
     @Test

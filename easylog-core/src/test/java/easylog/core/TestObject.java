@@ -1,7 +1,12 @@
 package easylog.core;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 @SuppressWarnings("UnusedParameters")
 public class TestObject {
+
+    public List<String> messages;
 
     @Log(detailed = true, position = {LogPosition.BEFORE, LogPosition.AFTER}, level = LogLevel.TRACE)
     public int defaultDetailedBeforeAfter1(String value1, int value2) {
@@ -66,5 +71,23 @@ public class TestObject {
     @Log(value = "AE_TEST!!!", position = LogPosition.AFTER_EXCEPTION)
     public int customMessageAfterException(String value1, int value2) {
         throw new RuntimeException("ERROR");
+    }
+
+    @Log(detailed = true, position = LogPosition.AFTER)
+    public CompletableFuture<Void> futureWithoutResultDetailed() {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            messages.add("CALLED");
+        });
+    }
+
+    @Log(detailed = true, position = LogPosition.AFTER)
+    public CompletableFuture<Integer> futureWithResultDetailed() {
+        return CompletableFuture.supplyAsync(() -> 123);
     }
 }
