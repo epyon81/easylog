@@ -107,9 +107,9 @@ subprojects {
 
             repo = 'maven'
             name = project.name
-            websiteUrl = "https://github.com/$githubRepo"
-            issueTrackerUrl = "https://github.com/$githubRepo/issues"
-            vcsUrl = "https://github.com/epyon81/${githubRepo}.git"
+            websiteUrl = "https://github.com/$easylogGithubRepo"
+            issueTrackerUrl = "https://github.com/$easylogGithubRepo/issues"
+            vcsUrl = "https://github.com/epyon81/${easylogGithubRepo}.git"
             licenses = ['MIT']
             labels = ['logging', 'aspect', 'guice', 'spring', 'jee']
         }
