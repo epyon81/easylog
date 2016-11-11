@@ -15,6 +15,8 @@ plugins {
 
 apply plugin: 'distribution'
 
+def easylogGithubRepo = 'epyon81/easylog'
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
@@ -67,17 +69,29 @@ subprojects {
         testCompile "org.assertj:assertj-core:$assertjVersion"
     }
 
+    def pomConfig = {
+        licenses {
+            license {
+                name "MIT"
+                url "https://github.com/$easylogGithubRepo/blob/master/LICENSE"
+                distribution "repo"
+            }
+        }
+    }
+
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                if (plugins.hasPlugin('war')) {
-                    from components.web
-                } else {
-                    from components.java
-                }
+                from components.java
 
                 artifact sourcesJar
                 artifact javadocJar
+
+                pom.withXml {
+                    def root = asNode()
+                    root.appendNode('description', project.description)
+                    root.children().last() + pomConfig
+                }
             }
         }
     }
@@ -89,14 +103,15 @@ subprojects {
         publications = ['mavenJava']
 
         pkg {
+            githubRepo = easylogGithubRepo
+
             repo = 'maven'
             name = project.name
-            userOrg = user
-            websiteUrl = 'https://github.com/epyon81/easylog'
-            vcsUrl = 'https://github.com/epyon81/easylog.git'
+            websiteUrl = "https://github.com/$githubRepo"
+            issueTrackerUrl = "https://github.com/$githubRepo/issues"
+            vcsUrl = "https://github.com/epyon81/${githubRepo}.git"
             licenses = ['MIT']
-
-            githubRepo = 'epyon81/easylog'
+            labels = ['logging', 'aspect', 'guice', 'spring', 'jee']
         }
     }
 }

@@ -2,3 +2,5 @@ dependencies {
     testCompile "net.bytebuddy:byte-buddy:$byteBuddyVersion"
     testCompile "org.mockito:mockito-core:$mockitoVersion"
 }
+
+description = 'easylog core library'
