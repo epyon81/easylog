@@ -27,12 +27,6 @@ def pomConfig = {
     }
 }
 
-scmVersion {
-    tag {
-        initialVersion = {config, position -> '1.2.0'}
-    }
-}
-
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
