@@ -70,6 +70,12 @@ subprojects {
     }
 
     def pomConfig = {
+        url "https://github.com/$easylogGithubRepo"
+
+        scm {
+            url "https://github.com/epyon81/${easylogGithubRepo}.git"
+        }
+
         licenses {
             license {
                 name 'MIT'
