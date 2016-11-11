@@ -27,14 +27,16 @@ def pomConfig = {
     }
 }
 
+allprojects {
+    project.version = scmVersion.version
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'com.jfrog.bintray'
-
-    project.version = scmVersion.version
 
     group 'com.github.epyon81.easylog'
 
