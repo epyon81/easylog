@@ -43,7 +43,7 @@ subprojects {
 
     sourceCompatibility = 1.8
 
-    task sourcesJar(type: Jar, dependsOn: classes) {
+    task sourcesJar(type: Jar) {
         classifier = 'sources'
         from sourceSets.main.allSource
     }
@@ -72,9 +72,9 @@ subprojects {
     def pomConfig = {
         licenses {
             license {
-                name "MIT"
+                name 'MIT'
                 url "https://github.com/$easylogGithubRepo/blob/master/LICENSE"
-                distribution "repo"
+                distribution 'repo'
             }
         }
     }
@@ -96,22 +96,31 @@ subprojects {
         }
     }
 
-    bintray {
-        user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-        key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    project.afterEvaluate {
+        bintray {
+            user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+            key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
 
-        publications = ['mavenJava']
+            publications = ['mavenJava']
 
-        pkg {
-            githubRepo = easylogGithubRepo
+            publish = true
 
-            repo = 'maven'
-            name = project.name
-            websiteUrl = "https://github.com/$easylogGithubRepo"
-            issueTrackerUrl = "https://github.com/$easylogGithubRepo/issues"
-            vcsUrl = "https://github.com/epyon81/${easylogGithubRepo}.git"
-            licenses = ['MIT']
-            labels = ['logging', 'aspect', 'guice', 'spring', 'jee']
+            pkg {
+                githubRepo = easylogGithubRepo
+
+                repo = 'maven'
+                name = project.name
+                desc = project.description
+                websiteUrl = "https://github.com/$easylogGithubRepo"
+                issueTrackerUrl = "https://github.com/$easylogGithubRepo/issues"
+                vcsUrl = "https://github.com/epyon81/${easylogGithubRepo}.git"
+                licenses = ['MIT']
+                publicDownloadNumbers = true
+
+                version {
+                    vcsTag = "v$project.version"
+                }
+            }
         }
     }
 }
@@ -133,4 +142,10 @@ distributions {
 
 release {
     tagTemplate = 'v${version}'
+}
+
+afterReleaseBuild.dependsOn bintrayUpload
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
 }

@@ -5,3 +5,5 @@ dependencies {
 
     testCompile "org.mockito:mockito-core:$mockitoVersion"
 }
+
+description = 'easylog message parser implementation based on the Java Unified Expression Language'

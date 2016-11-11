@@ -4,3 +4,5 @@ dependencies {
 
     testCompile "org.mockito:mockito-core:$mockitoVersion"
 }
+
+description = 'easylog logger implementation using slf4j'

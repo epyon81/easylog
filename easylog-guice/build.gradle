@@ -4,3 +4,5 @@ dependencies {
 
     testCompile project(':easylog-el-messageparser')
 }
+
+description = 'easylog integration with guice'

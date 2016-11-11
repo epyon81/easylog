@@ -3,3 +3,5 @@ dependencies {
 
     compile "javax:javaee-api:$javaeeVersion"
 }
+
+description = 'easylog integration with JEE'
