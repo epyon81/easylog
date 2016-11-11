@@ -7,6 +7,22 @@ apply plugin: 'distribution'
 
 def easylogGithubRepo = 'epyon81/easylog'
 
+def pomConfig = {
+    url "https://github.com/$easylogGithubRepo"
+
+    scm {
+        url "https://github.com/epyon81/${easylogGithubRepo}.git"
+    }
+
+    licenses {
+        license {
+            name 'MIT'
+            url "https://github.com/$easylogGithubRepo/blob/master/LICENSE"
+            distribution 'repo'
+        }
+    }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
@@ -56,22 +72,6 @@ subprojects {
     dependencies {
         testCompile "junit:junit:$junitVersion"
         testCompile "org.assertj:assertj-core:$assertjVersion"
-    }
-
-    def pomConfig = {
-        url "https://github.com/$easylogGithubRepo"
-
-        scm {
-            url "https://github.com/epyon81/${easylogGithubRepo}.git"
-        }
-
-        licenses {
-            license {
-                name 'MIT'
-                url "https://github.com/$easylogGithubRepo/blob/master/LICENSE"
-                distribution 'repo'
-            }
-        }
     }
 
     publishing {
