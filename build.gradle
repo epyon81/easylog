@@ -138,7 +138,7 @@ release {
     tagTemplate = 'v${version}'
 }
 
-afterReleaseBuild.dependsOn bintrayUpload
+afterReleaseBuild.dependsOn subprojects.bintrayUpload
 
 task wrapper(type: Wrapper) {
     gradleVersion = '3.1'
