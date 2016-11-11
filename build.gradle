@@ -6,25 +6,31 @@ plugins {
 apply plugin: 'distribution'
 
 def easylogGithubRepo = 'epyon81/easylog'
+def easylogWebsiteUrl = "https://github.com/$easylogGithubRepo"
+def easylogScmUrl = "https://github.com/epyon81/${easylogGithubRepo}.git"
+def easylogLicenseUrl = "https://github.com/$easylogGithubRepo/blob/master/LICENSE"
+def easylogIssuesUrl = "https://github.com/$easylogGithubRepo/issues"
 
 def pomConfig = {
-    url "https://github.com/$easylogGithubRepo"
+    url easylogWebsiteUrl
 
     scm {
-        url "https://github.com/epyon81/${easylogGithubRepo}.git"
+        url easylogScmUrl
     }
 
     licenses {
         license {
             name 'MIT'
-            url "https://github.com/$easylogGithubRepo/blob/master/LICENSE"
+            url easylogLicenseUrl
             distribution 'repo'
         }
     }
 }
 
 scmVersion {
-    localOnly = true
+    tag {
+        initialVersion = {config, position -> '1.2.0'}
+    }
 }
 
 subprojects {
@@ -108,9 +114,9 @@ subprojects {
             githubRepo = easylogGithubRepo
             repo = 'maven'
             name = project.name
-            websiteUrl = "https://github.com/$easylogGithubRepo"
-            issueTrackerUrl = "https://github.com/$easylogGithubRepo/issues"
-            vcsUrl = "https://github.com/epyon81/${easylogGithubRepo}.git"
+            websiteUrl = easylogWebsiteUrl
+            issueTrackerUrl = easylogIssuesUrl
+            vcsUrl = easylogScmUrl
             licenses = ['MIT']
             publicDownloadNumbers = true
 
@@ -139,14 +145,6 @@ distributions {
         }
     }
 }
-
-//release {
-//    tagTemplate = 'v${version}'
-//}
-//
-//project.afterEvaluate {
-//    afterReleaseBuild.dependsOn bintrayUpload
-//}
 
 task wrapper(type: Wrapper) {
     gradleVersion = '3.1'
