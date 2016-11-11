@@ -10,6 +10,7 @@ buildscript {
 
 plugins {
     id 'net.researchgate.release' version '2.4.0'
+    id "com.jfrog.bintray" version "1.7.2"
 }
 
 apply plugin: 'distribution'
@@ -20,6 +21,7 @@ subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'nebula.optional-base'
+    apply plugin: 'com.jfrog.bintray'
 
     group 'com.github.epyon81.easylog'
 
@@ -39,14 +41,18 @@ subprojects {
 
     sourceCompatibility = 1.8
 
-    task sourceJar(type: Jar) {
+    task sourcesJar(type: Jar, dependsOn: classes) {
         classifier = 'sources'
-        from sourceSets.main.allJava
+        from sourceSets.main.allSource
     }
 
-    task javadocJar(type: Jar) {
+    task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
-        from javadoc
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar, javadocJar
     }
 
     repositories {
@@ -64,10 +70,33 @@ subprojects {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                from components.java
-                artifact sourceJar
+                if (plugins.hasPlugin('war')) {
+                    from components.web
+                } else {
+                    from components.java
+                }
+
+                artifact sourcesJar
                 artifact javadocJar
             }
+        }
+    }
+
+    bintray {
+        user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+        key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+
+        publications = ['mavenJava']
+
+        pkg {
+            repo = 'maven'
+            name = project.name
+            userOrg = user
+            websiteUrl = 'https://github.com/epyon81/easylog'
+            vcsUrl = 'https://github.com/epyon81/easylog.git'
+            licenses = ['MIT']
+
+            githubRepo = 'epyon81/easylog'
         }
     }
 }
