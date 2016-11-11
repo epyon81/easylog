@@ -1,6 +1,6 @@
 plugins {
-    id 'net.researchgate.release' version '2.4.0'
     id "com.jfrog.bintray" version "1.7.2"
+    id 'pl.allegro.tech.build.axion-release' version '1.4.1'
 }
 
 apply plugin: 'distribution'
@@ -23,12 +23,18 @@ def pomConfig = {
     }
 }
 
+scmVersion {
+    localOnly = true
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'com.jfrog.bintray'
+
+    project.version = scmVersion.version
 
     group 'com.github.epyon81.easylog'
 
@@ -134,13 +140,13 @@ distributions {
     }
 }
 
-release {
-    tagTemplate = 'v${version}'
-}
-
-project.afterEvaluate {
-    afterReleaseBuild.dependsOn bintrayUpload
-}
+//release {
+//    tagTemplate = 'v${version}'
+//}
+//
+//project.afterEvaluate {
+//    afterReleaseBuild.dependsOn bintrayUpload
+//}
 
 task wrapper(type: Wrapper) {
     gradleVersion = '3.1'
