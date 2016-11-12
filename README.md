@@ -1,4 +1,4 @@
-### easylog [![Build Status](https://travis-ci.org/epyon81/easylog.svg?branch=master)](https://travis-ci.org/epyon81/easylog)
+### easylog [![Build Status](https://travis-ci.org/epyon81/easylog.svg?branch=master)](https://travis-ci.org/epyon81/easylog) [![Coverage Status](https://coveralls.io/repos/github/epyon81/easylog/badge.svg?branch=master)](https://coveralls.io/github/epyon81/easylog?branch=master)
 Easy to use aspect oriented logging framework.
 
 ### Getting started
