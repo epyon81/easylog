@@ -27,6 +27,14 @@ def pomConfig = {
     }
 }
 
+scmVersion {
+    hooks {
+        pre 'fileUpdate', [file: 'README.md', pattern: {v, c -> /<version>$v<\/version>/}, replacement: {v, c -> "<version>$v</version>"}]
+        pre 'fileUpdate', [file: 'README.md', pattern: {v, c -> /:$v'/}, replacement: {v, c -> ":$v'"}]
+        pre 'commit'
+    }
+}
+
 allprojects {
     project.version = scmVersion.version
 }
