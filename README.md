@@ -1,7 +1,9 @@
-### easylog [![Build Status](https://travis-ci.org/epyon81/easylog.svg?branch=master)](https://travis-ci.org/epyon81/easylog) [![Coverage Status](https://coveralls.io/repos/github/epyon81/easylog/badge.svg?branch=master)](https://coveralls.io/github/epyon81/easylog?branch=master)
+[![Build Status](https://travis-ci.org/epyon81/easylog.svg?branch=master)](https://travis-ci.org/epyon81/easylog) [![Coverage Status](https://coveralls.io/repos/github/epyon81/easylog/badge.svg?branch=master)](https://coveralls.io/github/epyon81/easylog?branch=master)
+
+# easylog 
 Easy to use aspect oriented logging framework.
 
-### Getting started
+# Getting started
 
 First add the repository containing the artifacts to your build script.
 
@@ -25,6 +27,8 @@ repositories {
 
 Add the _easylog-core_ library.
 
+[![Download](https://api.bintray.com/packages/epyon81/maven/easylog-core/images/download.svg)](https://bintray.com/epyon81/maven/easylog-core/_latestVersion)
+
 ### Gradle
 
 ```shell
@@ -43,6 +47,8 @@ compile 'com.github.epyon81.easylog:easylog-core:1.2.1'
 
 Add _easylog-slf4j_ binding.
 
+[![Download](https://api.bintray.com/packages/epyon81/maven/easylog-slf4j/images/download.svg)](https://bintray.com/epyon81/maven/easylog-slf4j/_latestVersion)
+
 ### Gradle
 
 ```shell
@@ -60,6 +66,8 @@ compile 'com.github.epyon81.easylog:easylog-slf4j:1.2.1'
 ```
 
 **(Optional)** Add _easylog-el-messageparser_ to use EL expressions in log messages.
+
+[![Download](https://api.bintray.com/packages/epyon81/maven/easylog-el-messageparser/images/download.svg)](https://bintray.com/epyon81/maven/easylog-el-messageparser/_latestVersion)
 
 ### Gradle
 
@@ -81,6 +89,8 @@ Choose your framework binding:
 
 ## Guice
 
+[![Download](https://api.bintray.com/packages/epyon81/maven/easylog-guice/images/download.svg)](https://bintray.com/epyon81/maven/easylog-guice/_latestVersion)
+
 ### Gradle
 
 ```shell
@@ -100,6 +110,8 @@ compile 'com.github.epyon81.easylog:easylog-guice:1.2.1'
 Include the guice module `easylog.guice.EasylogModule` when creating your interceptor.
 
 ## JEE
+
+[![Download](https://api.bintray.com/packages/epyon81/maven/easylog-jee/images/download.svg)](https://bintray.com/epyon81/maven/easylog-jee/_latestVersion)
 
 ### Gradle
 
@@ -121,6 +133,8 @@ Setting up JEE is a bit more complex than guice. Register the interceptor class 
 Now you can annotate your beans with the `@Easylog` interceptor annotation and use the `@Log` annotation on your bean's public methods. 
  
 ## Spring
+
+[![Download](https://api.bintray.com/packages/epyon81/maven/easylog-spring/images/download.svg)](https://bintray.com/epyon81/maven/easylog-spring/_latestVersion)
 
 ### Gradle
 
