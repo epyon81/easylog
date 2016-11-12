@@ -1,10 +1,11 @@
 plugins {
     id "com.jfrog.bintray" version "1.7.2"
     id 'pl.allegro.tech.build.axion-release' version '1.4.1'
-    id 'com.github.kt3k.coveralls' version '2.6.3'
+    id 'com.github.kt3k.coveralls' version '2.7.0'
 }
 
 apply plugin: 'distribution'
+apply plugin: 'jacoco'
 
 def easylogGithubRepo = 'epyon81/easylog'
 def easylogWebsiteUrl = "https://github.com/$easylogGithubRepo"
@@ -30,14 +31,23 @@ def pomConfig = {
 
 scmVersion {
     hooks {
-        pre 'fileUpdate', [file: 'README.md', pattern: {v, c -> /<version>$v<\/version>/}, replacement: {v, c -> "<version>$v</version>"}]
-        pre 'fileUpdate', [file: 'README.md', pattern: {v, c -> /:$v'/}, replacement: {v, c -> ":$v'"}]
+        pre 'fileUpdate', [file: 'README.md', pattern: { v, c -> /<version>$v<\/version>/ }, replacement: { v, c -> "<version>$v</version>" }]
+        pre 'fileUpdate', [file: 'README.md', pattern: { v, c -> /:$v'/ }, replacement: { v, c -> ":$v'" }]
         pre 'commit'
     }
 }
 
 allprojects {
     project.version = scmVersion.version
+
+    repositories {
+        jcenter()
+        maven { url 'http://repository.jboss.org/nexus/content/groups/public' }
+        maven { url 'http://repository.jboss.org/nexus/content/repositories/deprecated' }
+        maven { url 'http://repo.jfrog.org/artifactory/repo' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        mavenCentral()
+    }
 }
 
 subprojects {
@@ -64,7 +74,7 @@ subprojects {
         reflectionsVersion = '0.9.10'
     }
 
-    sourceCompatibility = 1.8
+    sourceCompatibility = JavaVersion.VERSION_1_8
 
     task sourcesJar(type: Jar) {
         classifier = 'sources'
@@ -80,16 +90,21 @@ subprojects {
         archives sourcesJar, javadocJar
     }
 
-    repositories {
-        jcenter()
-        maven { url 'http://repository.jboss.org/nexus/content/groups/public' }
-        maven { url 'http://repository.jboss.org/nexus/content/repositories/deprecated' }
-        maven { url 'http://repo.jfrog.org/artifactory/repo' }
-    }
-
     dependencies {
         testCompile "junit:junit:$junitVersion"
         testCompile "org.assertj:assertj-core:$assertjVersion"
+    }
+
+    tasks.withType(Test) {
+        jacoco {
+            append = true
+            classDumpFile = file("${rootDir}/build/jacoco/classpathdumps")
+            destinationFile = file("${rootDir}/build/jacoco/jacocoTest.exec")
+        }
+    }
+
+    jacoco {
+        toolVersion = '0.7.8-SNAPSHOT'
     }
 
     jacocoTestReport {
@@ -157,6 +172,37 @@ distributions {
             }
         }
     }
+}
+
+task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+    description = 'Generates an aggregate report from all subprojects'
+    dependsOn(subprojects.test)
+
+    additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(subprojects.sourceSets.main.output)
+    executionData = files(subprojects.jacocoTestReport.executionData)
+
+    reports {
+        html.enabled = true // human readable
+        xml.enabled = true // required by coveralls
+    }
+
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}
+
+coveralls {
+    sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+tasks.coveralls {
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
+
+    dependsOn jacocoRootReport
 }
 
 task wrapper(type: Wrapper) {
