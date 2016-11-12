@@ -1,6 +1,7 @@
 plugins {
     id "com.jfrog.bintray" version "1.7.2"
     id 'pl.allegro.tech.build.axion-release' version '1.4.1'
+    id 'com.github.kt3k.coveralls' version '2.6.3'
 }
 
 apply plugin: 'distribution'
@@ -45,6 +46,7 @@ subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'com.jfrog.bintray'
+    apply plugin: 'jacoco'
 
     group 'com.github.epyon81.easylog'
 
@@ -88,6 +90,13 @@ subprojects {
     dependencies {
         testCompile "junit:junit:$junitVersion"
         testCompile "org.assertj:assertj-core:$assertjVersion"
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
     }
 
     publishing {
